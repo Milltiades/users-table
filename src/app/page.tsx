@@ -39,10 +39,6 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import Loading from "./loading";
-import { useDispatch, useSelector } from "react-redux";
-import { updateName } from "@/store/nameSlice";
-import { clearName } from "@/store/nameSlice";
-import { deleteUser, getUsers } from "@/store/userSlice";
 
 export type Payment = {
   id: string;
@@ -102,14 +98,14 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
-      const usersArray = useSelector((store: any) => store.users);
-      const dispatch = useDispatch();
+      // const usersArray = useSelector((store: any) => store.users);
+      // const dispatch = useDispatch();
 
       // const changeName = () => {
       //   dispatch(updateName("lasha"));
       // };
       const deleteUserHandler = (userId: any) => {
-        dispatch(deleteUser(userId));
+        // dispatch(deleteUser(userId));
         console.log("delete:", userId);
       };
       // console.log(usersArray);
@@ -180,6 +176,11 @@ export const columns: ColumnDef<Payment>[] = [
   // },
 ];
 
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "@/store/userSlice";
+import { clearName, updateName } from "@/store/nameSlice";
+// import { getUsers } from "@/store/userSlice";
+
 export default function DataTableDemo() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -187,10 +188,9 @@ export default function DataTableDemo() {
   const [rowSelection, setRowSelection] = useState({});
   const [data, setData] = useState<any>();
 
-  // console.log("ssss:", usersArray);
-
-  const usersArray = useSelector((store: any) => store.users);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
+  const user = useSelector((state: any) => state.user);
+  const name = useSelector((store: any) => store.name.value);
 
   useEffect(() => {
     const FetchUsers = async () => {
@@ -201,7 +201,8 @@ export default function DataTableDemo() {
         if (response.ok) {
           const data = await response.json();
           setData(data);
-          dispatch(getUsers(usersArray));
+          fetchUsers();
+          console.log("user:", user);
         } else {
           console.error("failed fetch users:", response.statusText);
         }
@@ -230,19 +231,6 @@ export default function DataTableDemo() {
       rowSelection,
     },
   });
-
-  // console.log("data:", data);
-
-  // const name = useSelector((store: any) => store.name.value);
-
-  // const dispatch = useDispatch();
-
-  // const changeName = () => {
-  //   dispatch(updateName("lasha"));
-  // };
-  // const deleteName = () => {
-  //   dispatch(clearName());
-  // };
 
   return (
     <>
@@ -370,6 +358,36 @@ export default function DataTableDemo() {
         <button onClick={changeName}>click me</button>
         <button onClick={deleteName}>delete</button>
       </> */}
+
+      <div>
+        {/* <h2>List of Users</h2>
+        {user.loading && <div> loading...</div>}
+        {!user.loading && user.error ? <div>Error: {user.error}</div> : null}
+        {!user && user.users.length ? (
+          <ul>
+            {user.users.map((x: any) => (
+              <li key={x.id}>{x.name}</li>
+            ))}
+          </ul>
+        ) : null} */}
+
+        <h2>my name is {name}</h2>
+        <button
+          onClick={() => {
+            dispatch(updateName("lasha"));
+          }}
+        >
+          change name
+        </button>
+        <button
+          className="ml-5"
+          onClick={() => {
+            dispatch(clearName());
+          }}
+        >
+          delete name
+        </button>
+      </div>
     </>
   );
 }
