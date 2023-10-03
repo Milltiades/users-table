@@ -179,7 +179,8 @@ export const columns: ColumnDef<Payment>[] = [
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "@/store/userSlice";
 import { clearName, updateName } from "@/store/nameSlice";
-// import { getUsers } from "@/store/userSlice";
+
+import { setDataUser } from "@/store/userSlice";
 
 export default function DataTableDemo() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -201,7 +202,7 @@ export default function DataTableDemo() {
         if (response.ok) {
           const data = await response.json();
           setData(data);
-          fetchUsers();
+          dispatch(setDataUser(data));
           console.log("user:", user);
         } else {
           console.error("failed fetch users:", response.statusText);
