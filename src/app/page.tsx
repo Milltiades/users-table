@@ -41,7 +41,7 @@ import { useEffect, useState } from "react";
 import Loading from "./loading";
 
 export type Payment = {
-  id: string;
+  id: any;
   name: string;
   address: {
     city: string;
@@ -91,24 +91,29 @@ export const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: "address.city",
-    header: () => <div className="text-right">Address</div>,
+    header: () => <div>Address</div>,
   },
+
   {
     id: "actions",
     enableHiding: false,
+    header: () => <div>Actions</div>,
     cell: ({ row }) => {
       const payment = row.original;
       // const usersArray = useSelector((store: any) => store.users);
-      // const dispatch = useDispatch();
+      const dispatch = useDispatch<any>();
 
-      // const changeName = () => {
-      //   dispatch(updateName("lasha"));
-      // };
-      const deleteUserHandler = (userId: any) => {
-        // dispatch(deleteUser(userId));
-        console.log("delete:", userId);
+      const handleDelete = (userId: any) => {
+        dispatch(deleteUser(userId));
       };
-      // console.log(usersArray);
+
+      const handleEdit = (userId: any) => {
+        dispatch(startEditUser(userId));
+      };
+      const handleCancelEdit = () => {
+        dispatch(cancelEditUser());
+      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -133,6 +138,7 @@ export const columns: ColumnDef<Payment>[] = [
               className=" cursor-pointer"
               onClick={() => {
                 console.log("edit:", payment.id);
+                // dispatch(updateModalEdit({}));
               }}
             >
               Edit
@@ -140,7 +146,8 @@ export const columns: ColumnDef<Payment>[] = [
             <DropdownMenuItem
               className=" cursor-pointer"
               onClick={() => {
-                deleteUserHandler(payment.id);
+                dispatch(updateModal({}));
+                dispatch(getUserId(payment.id));
               }}
             >
               Delete
@@ -177,42 +184,72 @@ export const columns: ColumnDef<Payment>[] = [
 ];
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "@/store/userSlice";
+// import { fetchUsers } from "@/store/userSlice";
 import { clearName, updateName } from "@/store/nameSlice";
 
-import { setDataUser } from "@/store/userSlice";
+import Modal from "@/components/ModalDelete";
+import { updateModal } from "@/store/modalSlice";
+import ModalDelete from "@/components/ModalDelete";
+import ModalEdit from "@/components/ModalEdit";
+import { updateModalEdit } from "@/store/editSlice";
+import {
+  deleteUser,
+  fetchUsers,
+  startEditUser,
+  cancelEditUser,
+  submitEditUser,
+  User,
+} from "@/store/userSlice";
+import { getUserId } from "@/store/userIdSlice";
 
 export default function DataTableDemo() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [data, setData] = useState<any>();
+  // const [data, setData] = useState<any>();
 
   const dispatch = useDispatch<any>();
-  const user = useSelector((state: any) => state.user);
+  // const user = useSelector((state: any) => state.user.users);
   const name = useSelector((store: any) => store.name.value);
+  const modalBtn = useSelector((state: any) => state.modal);
+  const modalEdit = useSelector((state: any) => state.edit);
+
+  const data: any = useSelector((state: any) => state.user.users);
+  const status: string = useSelector((state: any) => state.user.status);
+  const error: string | null = useSelector((state: any) => state.user.error);
+  const editingUserId: number | null = useSelector(
+    (state: any) => state.user.editingUserId
+  );
+
+  // useEffect(() => {
+  //   const FetchUsers = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         "https://jsonplaceholder.typicode.com/users"
+  //       );
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         // console.log("dataRes:", dataRes);
+  //         setData(data);
+  //         // dispatch(setDataUser(dataRes));
+  //         // console.log("user:", data);
+  //         // dispatch(fetchUsers());
+  //       } else {
+  //         console.error("failed fetch users:", response.statusText);
+  //       }
+  //     } catch (error) {
+  //       console.log("Error fetching users:", error);
+  //     }
+  //   };
+  //   FetchUsers();
+  // }, []);
 
   useEffect(() => {
-    const FetchUsers = async () => {
-      try {
-        const response = await fetch(
-          "https://jsonplaceholder.typicode.com/users"
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setData(data);
-          dispatch(setDataUser(data));
-          console.log("user:", user);
-        } else {
-          console.error("failed fetch users:", response.statusText);
-        }
-      } catch (error) {
-        console.log("Error fetching users:", error);
-      }
-    };
-    FetchUsers();
-  }, []);
+    if (status === "idle") {
+      dispatch(fetchUsers());
+    }
+  }, [status, dispatch]);
 
   const table = useReactTable({
     data,
@@ -354,12 +391,10 @@ export default function DataTableDemo() {
         <Loading />
       )}
 
-      {/* <>
-        <h1>{name}</h1>
-        <button onClick={changeName}>click me</button>
-        <button onClick={deleteName}>delete</button>
-      </> */}
-
+      {modalBtn && <ModalDelete />}
+      {/* <button onClick={() => dispatch(updateModal({}))}>modal delete</button> */}
+      {modalEdit && <ModalEdit />}
+      {/* <button onClick={() => dispatch(updateModalEdit({}))}>modal edit</button> */}
       <div>
         {/* <h2>List of Users</h2>
         {user.loading && <div> loading...</div>}
@@ -372,7 +407,9 @@ export default function DataTableDemo() {
           </ul>
         ) : null} */}
 
-        <h2>my name is {name}</h2>
+        {/* <h2>
+          my name is {name} {user}
+        </h2>
         <button
           onClick={() => {
             dispatch(updateName("lasha"));
@@ -387,7 +424,7 @@ export default function DataTableDemo() {
           }}
         >
           delete name
-        </button>
+        </button> */}
       </div>
     </>
   );
