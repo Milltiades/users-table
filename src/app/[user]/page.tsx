@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const page = () => {
+const Page = () => {
   const params = useParams();
   const userId =
     typeof params.user === "string" ? parseInt(params.user, 10) : 0;
@@ -49,4 +49,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
