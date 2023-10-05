@@ -6,7 +6,7 @@ import { deleteUser } from "@/store/userSlice";
 
 export default function ModalDelete() {
   const dispatch = useDispatch();
-  const modalChange = useSelector((state: boolean) => state);
+
   const userIdnow = useSelector((store: any) => store.userid.value);
 
   const handleDelete = (userId: any) => {
