@@ -25,7 +25,7 @@ const Page = () => {
     };
 
     fetchUserInfo();
-  }, []);
+  }, [userId]);
 
   return (
     <div className="p-20">
