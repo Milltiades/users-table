@@ -62,7 +62,7 @@ export default function ModalEdit() {
         </button>
 
         <div className="flex justify-between">
-          <label htmlFor="">
+          <form onSubmit={handleSubmitEdit}>
             <input
               type="text"
               placeholder="name"
@@ -95,8 +95,8 @@ export default function ModalEdit() {
               value={editedUser.address.city}
               onChange={handleInputChange}
             />
-          </label>
-          <button onClick={handleSubmitEdit}>Submit</button>
+            <input type="submit" />
+          </form>
         </div>
       </div>
     </div>
