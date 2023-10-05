@@ -11,6 +11,9 @@ export default function ModalDelete() {
 
   const handleDelete = (userId: any) => {
     dispatch(deleteUser(userId));
+    setTimeout(() => {
+      alert("User deleted successfully");
+    }, 1000);
   };
   return (
     <div className="modal-container">

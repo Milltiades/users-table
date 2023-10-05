@@ -48,6 +48,9 @@ export default function ModalEdit() {
       });
     }
     dispatch(updateModalEdit({}));
+    setTimeout(() => {
+      alert("User edited successfully");
+    }, 1000);
   };
 
   return (
