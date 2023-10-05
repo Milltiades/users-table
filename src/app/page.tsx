@@ -40,7 +40,7 @@ import {
 import { useEffect, useState } from "react";
 import Loading from "./loading";
 
-export type Payment = {
+type Payment = {
   id: any;
   name: string;
   address: {
@@ -49,7 +49,7 @@ export type Payment = {
   email: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<Payment>[] = [
   {
     id: "select",
     header: ({ table }) => (
